@@ -64,10 +64,10 @@ class IvetDataSpider(scrapy.Spider):
                                 args={'lua_source': script})
 
     def parse(self, response):
-        next_selector = response.xpath('//*[@title="Next page"]/@href')
-        for url in next_selector.extract():
-            yield SplashRequest("https://training.gov.au" + url, endpoint='execute',
-                                args={'lua_source': script2})
+        # next_selector = response.xpath('//*[@title="Next page"]/@href')
+        # for url in next_selector.extract():
+        #     yield SplashRequest("https://training.gov.au" + url, endpoint='execute',
+        #                         args={'lua_source': script2})
 
         url_selector = response.css('#gridRtoSearchResults')
 
@@ -84,12 +84,13 @@ class IvetDataSpider(scrapy.Spider):
             if data.css('a::text').extract() in [['Regulatory Decision Information'], ['Delivery'], ['Scope']]:
                 continue
             elif data.css('a::text').extract() in [['Registration'], ['Contacts']]:
-                urls += ["https://training.gov.au" + data.css('a::attr(href)').extract()[0]]
+                urls.append("https://training.gov.au" + data.css('a::attr(href)').extract()[0])
 
         self.data = {}
         for url in urls:
             if url == urls[-1]:
                 export = 'ok'
+                urls = []
             else:
                 export = ''
             yield SplashRequest(url, callback=self.parse_item, endpoint='execute', args={'lua_source': script3},
