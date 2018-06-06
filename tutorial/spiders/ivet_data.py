@@ -57,7 +57,6 @@ class IvetDataSpider(scrapy.Spider):
     name = "ivet_data"
     start_urls = ["https://training.gov.au/Search/SearchOrganisation?Name=&IncludeUnregisteredRtos=false&IncludeNotRtos=true&IncludeNotRtos=false&orgSearchByNameSubmit=Search&AdvancedSearch=&JavaScriptEnabled=true"]
     data = {}
-
     def start_requests(self):
         for url in self.start_urls:
             yield SplashRequest(url, self.parse, endpoint='execute',
@@ -109,3 +108,4 @@ class IvetDataSpider(scrapy.Spider):
         if response.meta['export'] == 'ok':
             yield self.data
         pass
+
