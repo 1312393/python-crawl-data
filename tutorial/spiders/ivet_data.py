@@ -121,7 +121,7 @@ class IvetDataSpider(scrapy.Spider):
                                 .strip().replace("\n                                   ", "")
                     }
                 self.data[response.meta['idx']].update(data)
-        if response.meta['export'] == 'ok':
+        if response.meta['export'] == 'ok' and len(self.data[response.meta['idx']]) >= 29:
             yield self.data[response.meta['idx']]
         pass
 
