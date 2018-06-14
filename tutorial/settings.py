@@ -101,6 +101,8 @@ SPIDER_MIDDLEWARES = {
     'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
 }
 
+DOWNLOAD_DELAY = 0.25
+
 DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
 
 HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
