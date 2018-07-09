@@ -19,17 +19,19 @@ class Delivery(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        next_selector = response.xpath('//*[@title="Next page"]/@href')
-        for url in next_selector.extract():
-            yield scrapy.Request("https://training.gov.au" + url)
+        # next_selector = response.xpath('//*[@title="Next page"]/@href')
+        # for url in next_selector.extract():
+        #     yield scrapy.Request("https://training.gov.au" + url)
 
         url_selector = response.css('#gridRtoSearchResults')
 
         for row in url_selector.css('tbody tr'):
             self.data.update({self.idx: {}})
+            self.data.update({self.idx+1: {}})
+            self.data.update({self.idx+2: {}})
             url = "https://training.gov.au" + row.css('td a::attr(href)')[0].extract()
             yield scrapy.Request(url=url, callback=self.parse_page, meta={'idx': self.idx})
-            self.idx += 1
+            self.idx += 3
 
     def parse_page(self, response):
         url_selector = response.css('ul.t-reset.t-tabstrip-items')[0].css('li.t-item')
@@ -55,6 +57,8 @@ class Delivery(scrapy.Spider):
                                 .strip().replace("\n                                   ", "")
                     }
                 self.data[response.meta['idx']].update(data)
+                self.data[response.meta['idx']+1].update(data)
+                self.data[response.meta['idx']+2].update(data)
         urls = []
 
         for data in url_selector:
@@ -87,10 +91,16 @@ class Delivery(scrapy.Spider):
         if 'Have tae' in self.data[response.meta['idx']]:
             if have_tae == 'yes':
                 self.data[response.meta['idx']].update({'Have tae': have_tae})
+                self.data[response.meta['idx'] + 1].update({'Have tae': have_tae})
+                self.data[response.meta['idx'] + 2].update({'Have tae': have_tae})
         else:
             self.data[response.meta['idx']].update({'Have tae': have_tae})
+            self.data[response.meta['idx'] + 1].update({'Have tae': have_tae})
+            self.data[response.meta['idx'] + 2].update({'Have tae': have_tae})
 
         if next == ['#']:
             yield self.data[response.meta['idx']]
+            yield self.data[response.meta['idx']+1]
+            yield self.data[response.meta['idx']+2]
         pass
 
